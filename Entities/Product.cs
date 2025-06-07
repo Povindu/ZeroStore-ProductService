@@ -13,12 +13,16 @@ namespace ProductService.Entities
         [MaxLength(4)]
         public string Tag { get; set; }
 
-
         [Required]
         public string Name { get; set; }
 
-
         public float Price { get; set; }
+
+        public ICollection<Variant> Variants { get; set; }
+            = new List<Variant>();
+
+
+
 
 
         public Product(string tag, string name)

@@ -15,8 +15,10 @@ namespace ProductService.Entities
 
         [ForeignKey("ProductId")]
         public Product? Product { get; set; }
-
         public int ProductId { get; set; }
+
+
+
 
         public Variant(string name)
         {
