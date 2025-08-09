@@ -38,7 +38,7 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ env.REGISTRY }}/${{ env.REGISTRY_OWNER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        tags: ${{ env.REGISTRY }}/povindu/zerostore-productservice:${{ github.sha }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
