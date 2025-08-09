@@ -11,9 +11,9 @@ permissions:
   id-token: write   # for OIDC login to Azure
 
 env:
-  IMAGE_NAME: zerostore
+  REPO_NAME: zerostore-productservice
   REGISTRY: ghcr.io
-  REGISTRY_OWNER: ${{ github.repository_owner }}
+  REGISTRY_OWNER: povindu
 
 jobs:
   build-and-deploy:
@@ -38,7 +38,7 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ env.REGISTRY }}/povindu/zerostore-productservice:${{ github.sha }}
+        tags: ${{ env.REGISTRY }}/${{ env.REGISTRY_OWNER }}/${{ env.REPO_NAME }}:${{ github.sha }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
@@ -54,8 +54,8 @@ jobs:
         az webapp config container set \
           --name ${{ secrets.AZURE_WEBAPP_NAME }} \
           --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-          --docker-custom-image-name ${{ env.REGISTRY }}/${{ env.REGISTRY_OWNER }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
-          --docker-registry-server-url https://${{ env.REGISTRY }}
+          --container-image-name ${{ env.REGISTRY }}/${{ env.REGISTRY_OWNER }}/${{ env.REPO_NAME }}:${{ github.sha }} \
+          --container-registry-url https://${{ env.REGISTRY }}
 
     - name: Restart Azure App Service
       run: |
