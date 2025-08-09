@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  productservice:
+    image: zerostore
+    ports:
+      - "8083:8080"
+      - "8084:8081"
+    volumes:
+      - ./ProductService.db:/app/ProductService.db
+
