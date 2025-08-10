@@ -60,6 +60,31 @@ builder.Services.AddDbContext<ProductServiceContext>(dbContextOptions =>
 builder.Services.AddScoped<IProductServiceRepository, ProductServiceRepository>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigins", policy =>
+    {
+        policy.WithOrigins(
+                "https://yourfrontend.com",
+                "http://localhost:3000"   
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowAll", policy =>
+//    {
+//        policy.AllowAnyOrigin()
+//              .AllowAnyHeader()
+//              .AllowAnyMethod();
+//    });
+//});
+
+
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -74,9 +99,12 @@ using (var scope = app.Services.CreateScope())
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseHttpsRedirection();
 }
 
-//app.UseHttpsRedirection();
+app.UseCors("AllowSpecificOrigins");
+//app.UseCors("AllowAll");
+
 
 app.UseAuthentication();
 
