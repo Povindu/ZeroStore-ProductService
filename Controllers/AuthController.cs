@@ -67,8 +67,14 @@ namespace ProductService.Controllers
             }
 
             //Step 2 : create a token
-            var securityKey = new SymmetricSecurityKey(
-                Convert.FromBase64String(_config["Authentication:SecretForKey"]));
+
+            var secretKey = _config["Authentication:SecretForKey"];
+            if (string.IsNullOrEmpty(secretKey))
+            {
+                throw new Exception("Authentication:SecretForKey is not configured.");
+            }
+            var securityKey = new SymmetricSecurityKey(Convert.FromBase64String(secretKey));
+
             var signingCredentials = new SigningCredentials(
                 securityKey, SecurityAlgorithms.HmacSha256);
 

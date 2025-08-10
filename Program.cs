@@ -1,9 +1,11 @@
 
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ProductService.DbContexts;
 using ProductService.Services;
-
+using ProductService.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,19 +19,38 @@ builder.WebHost.UseUrls($"http://*:{port}");
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
+
+
+var authSettings = builder.Configuration
+    .GetSection("Authentication")
+    .Get<AuthenticationSettings>();
+
+
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer(options =>
     {
-        options.TokenValidationParameters = new()
+        options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Authentication:Issuer"],
-            ValidAudience = builder.Configuration["Authentication:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Convert.FromBase64String(builder.Configuration["Authentication:SecretForKey"]))
-        }; 
+            ValidIssuer = authSettings.Issuer,
+            ValidAudience = authSettings.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(authSettings.SecretForKey))
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                Console.WriteLine("Token validated");
+                return Task.CompletedTask;
+            }
+        };
     }
 );
 
@@ -62,13 +83,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<ProductServiceContext>();
-    dbContext.Database.Migrate();  // Applies any pending migrations (creates DB if needed)
-}
-
 
 app.Run();
