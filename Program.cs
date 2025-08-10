@@ -65,7 +65,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigins", policy =>
     {
         policy.WithOrigins(
-                "https://yourfrontend.com",
+                "https://zerostore.azurewebsites.net",
                 "http://localhost:3000"   
             )
             .AllowAnyHeader()
