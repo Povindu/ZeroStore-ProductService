@@ -45,12 +45,12 @@ public class ProductController : ControllerBase
     {
 
         //following code is only written to test getting data from jwt token claims
-        var userName = User.Claims.FirstOrDefault(c => c.Type == "user_name")?.Value;
+        //var userName = User.Claims.FirstOrDefault(c => c.Type == "user_name")?.Value;
 
-        if(userName != "Povi")
-        {
-            return Forbid();
-        }
+        //if(userName != "Povi")
+        //{
+        //    return Forbid();
+        //}
 
 
         var productEntity = await _productServiceRepository.GetProductAsync(productId);
