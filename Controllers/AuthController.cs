@@ -54,7 +54,8 @@ namespace ProductService.Controllers
 
         [HttpPost("authenticate")]
         public ActionResult<string> Authenticate(
-            AuthenticationRequestBody authenticationRequestBody) {
+            AuthenticationRequestBody authenticationRequestBody)
+        {
 
 
             //Step 1: Validate username/password

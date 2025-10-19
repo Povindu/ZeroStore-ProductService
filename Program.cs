@@ -3,13 +3,20 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ProductService.DbContexts;
 using ProductService.Services;
+using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 
-// Add services to the container.
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(8081); // HTTP only
+});
+
+
+// Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
@@ -24,8 +31,9 @@ builder.Services.AddAuthentication("Bearer")
             ValidIssuer = builder.Configuration["Authentication:Issuer"],
             ValidAudience = builder.Configuration["Authentication:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
-                Convert.FromBase64String(builder.Configuration["Authentication:SecretForKey"]))
-        }; 
+                Encoding.UTF8.GetBytes(builder.Configuration["Authentication:SecretForKey"]))
+
+        };
     }
 );
 
@@ -50,5 +58,14 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+
+//Apply migration
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ProductServiceContext>();
+    dbContext.Database.Migrate(); // This applies any pending migrations
+}
+
 
 app.Run();

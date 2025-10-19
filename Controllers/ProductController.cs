@@ -10,7 +10,7 @@ namespace ProductService.Controllers;
 
 
 [ApiController]
-[Authorize]
+//[Authorize]
 [Route("api/product")]
 public class ProductController : ControllerBase
 {
